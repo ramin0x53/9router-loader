@@ -1,0 +1,16 @@
+# Source & config not needed in the published package
+src/
+tests/
+node_modules/
+
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
+eslint.config.js
+.editorconfig
+.gitignore
+.eslintcache
+
+coverage/
+*.log
+.DS_Store

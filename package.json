@@ -1,0 +1,54 @@
+{
+  "name": "opencode-9router-loader",
+  "version": "0.1.0",
+  "description": "OpenCode plugin for dynamically loading models and capability metadata from 9Router",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "prepublishOnly": "npm run check && npm run build"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "9router",
+    "models",
+    "openai-compatible"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "@opencode-ai/plugin": ">=1.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@opencode-ai/plugin": "^1.18.26",
+    "@types/node": "^22.10.2",
+    "eslint": "^10.9.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.69.0",
+    "vitest": "^2.1.8"
+  }
+}
