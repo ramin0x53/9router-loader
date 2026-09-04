@@ -13,7 +13,7 @@ OpenCode plugin for dynamically discovering and loading models and capability me
   - Vision / multimodal attachments (`attachment`, `modalities.input`, `modalities.output`)
 - **Chat Filter**: Excludes non-chat models (such as ASR / speech-to-text models like `parakeet`, embeddings, and rerankers).
 - **User Override Preservation**: Any model explicitly defined in your configuration takes precedence over discovered metadata.
-- **Fast Startup (Local Caching)**: Caches discovered models at `~/.cache/opencode/9router-cache.json` with a 1-hour TTL for zero startup latency.
+- **Always Up-To-Date**: Fetches models dynamically from 9Router each time OpenCode starts up without using any disk cache.
 
 ---
 
@@ -102,22 +102,6 @@ If you want to customize limits or parameters for a specific model, define it un
 
 ---
 
-## Cache Management
-
-The plugin caches model responses to avoid network requests on every command:
-
-- **Cache location**: `~/.cache/opencode/9router-cache.json`
-- **Default TTL**: 1 hour
-
-To force a refresh:
-
-```bash
-rm ~/.cache/opencode/9router-cache.json
-opencode models 9router
-```
-
----
-
 ## Development & Testing
 
 Install dependencies:
@@ -149,7 +133,6 @@ src/
   client.ts     /v1/models fetch with timeout + bearer auth
   mapper.ts     9Router capabilities -> OpenCode model config
   filter.ts     Non-chat model filtering (ASR, embeddings, rerankers)
-  cache.ts      Disk cache with TTL
   types.ts      9Router API + OpenCode config types
 tests/          Vitest unit tests
 ```

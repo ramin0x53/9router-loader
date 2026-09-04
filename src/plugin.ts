@@ -3,13 +3,10 @@ import { is9RouterProvider } from "./detector.js";
 import { isChatModel } from "./filter.js";
 import { map9RouterModelToOpenCode } from "./mapper.js";
 import { fetch9RouterModels } from "./client.js";
-import { ModelCache } from "./cache.js";
 import type { OpenCodeModelConfig, OpenCodeProviderConfig } from "./types.js";
 
 export const NineRouterLoaderPlugin: Plugin = async (_input: PluginInput, options?: PluginOptions) => {
-  const customCachePath = typeof options?.cachePath === "string" ? options.cachePath : undefined;
-  const ttlMs = typeof options?.cacheTtlMs === "number" ? options.cacheTtlMs : undefined;
-  const cache = new ModelCache(ttlMs, customCachePath);
+  const timeoutMs = typeof options?.timeoutMs === "number" ? options.timeoutMs : 8000;
 
   return {
     config: async (config: any) => {
@@ -31,31 +28,26 @@ export const NineRouterLoaderPlugin: Plugin = async (_input: PluginInput, option
 
         const apiKey = typeof provider.options?.apiKey === "string" ? provider.options.apiKey : undefined;
 
-        // Try reading fresh cache first for zero startup delay
-        let discoveredModels: Record<string, OpenCodeModelConfig> | null = await cache.read();
+        let discoveredModels: Record<string, OpenCodeModelConfig> | null = null;
 
-        if (!discoveredModels) {
-          try {
-            const rawModels = await fetch9RouterModels({
-              baseURL,
-              apiKey,
-              timeoutMs: 8000,
-            });
+        try {
+          const rawModels = await fetch9RouterModels({
+            baseURL,
+            apiKey,
+            timeoutMs,
+          });
 
-            // Filter non-chat models and map to OpenCode model configurations
-            const mapped: Record<string, OpenCodeModelConfig> = {};
-            for (const model of rawModels) {
-              if (isChatModel(model)) {
-                mapped[model.id] = map9RouterModelToOpenCode(model);
-              }
+          // Filter non-chat models and map to OpenCode model configurations
+          const mapped: Record<string, OpenCodeModelConfig> = {};
+          for (const model of rawModels) {
+            if (isChatModel(model)) {
+              mapped[model.id] = map9RouterModelToOpenCode(model);
             }
-
-            discoveredModels = mapped;
-            // Write to cache asynchronously
-            cache.write(mapped).catch(() => {});
-          } catch (err) {
-            console.warn(`[9router-loader] Failed to fetch models for provider "${providerId}":`, err instanceof Error ? err.message : String(err));
           }
+
+          discoveredModels = mapped;
+        } catch (err) {
+          console.warn(`[9router-loader] Failed to fetch models for provider "${providerId}":`, err instanceof Error ? err.message : String(err));
         }
 
         if (discoveredModels && Object.keys(discoveredModels).length > 0) {

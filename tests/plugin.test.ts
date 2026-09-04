@@ -30,9 +30,7 @@ describe("plugin - NineRouterLoaderPlugin", () => {
       },
     ]);
 
-    const pluginHooks = await NineRouterLoaderPlugin({} as any, {
-      cachePath: `/tmp/test-9router-cache-${Date.now()}.json`,
-    });
+    const pluginHooks = await NineRouterLoaderPlugin({} as any);
 
     const config = {
       provider: {
