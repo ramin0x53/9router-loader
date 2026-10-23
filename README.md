@@ -28,21 +28,21 @@ npm install
 npm run build
 ```
 
-### 2. Configure `opencode.json`
+### 2. Configure `opencode.json` (OpenCode v2)
 
-Add the plugin path to your OpenCode configuration (typically `~/.config/opencode/opencode.json` or project-level `opencode.json`):
+Add the plugin path (or package name) to your OpenCode v2 configuration (`~/.config/opencode/opencode.json` or project-level `opencode.json`):
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": [
+  "plugins": [
     "/Users/dexter/Code/9router-loader"
   ],
-  "provider": {
+  "providers": {
     "9router": {
-      "npm": "@ai-sdk/openai-compatible",
+      "package": "@opencode/ai/providers/openai-compatible",
       "name": "9Router",
-      "options": {
+      "settings": {
         "baseURL": "https://your-9router-endpoint.com/v1",
         "apiKey": "sk-your-9router-api-key"
       }
@@ -51,16 +51,16 @@ Add the plugin path to your OpenCode configuration (typically `~/.config/opencod
 }
 ```
 
-> **Note**: The provider key **must** start with `9router` (case-insensitive).
+> **Note**: The provider key **must** start with `9router` (case-insensitive). Legacy OpenCode v1 keys (`"plugin"`, `"provider"`, `"npm": "@ai-sdk/openai-compatible"`, and `"options"`) are also supported.
 
 ---
 
 ## Usage
 
-List all available 9Router models:
+List all available models:
 
 ```bash
-opencode models 9router
+opencode models
 ```
 
 Run an OpenCode session with any 9Router model:
@@ -75,15 +75,15 @@ Or select the model interactively inside the OpenCode TUI using the model picker
 
 ## Customizing Specific Models (Overrides)
 
-If you want to customize limits or parameters for a specific model, define it under `provider.9router.models` in your `opencode.json`. The plugin will preserve your custom settings over the auto-discovered ones:
+If you want to customize limits or parameters for a specific model, define it under `providers.9router.models` in your `opencode.json`. The plugin will preserve your custom settings over the auto-discovered ones:
 
 ```json
 {
-  "provider": {
+  "providers": {
     "9router": {
-      "npm": "@ai-sdk/openai-compatible",
+      "package": "@opencode/ai/providers/openai-compatible",
       "name": "9Router",
-      "options": {
+      "settings": {
         "baseURL": "https://your-9router-endpoint.com/v1",
         "apiKey": "sk-..."
       },
@@ -126,14 +126,16 @@ Available scripts:
 ## Project Structure
 
 ```
+index.js        Root re-export for OpenCode v2 local directory plugin resolution
 src/
-  index.ts      Plugin entry point (exports the OpenCode plugin)
-  plugin.ts     config hook: detection, discovery, merge
+  index.ts      Plugin entry point (exports the OpenCode v2 & v1 plugin)
+  plugin.ts     OpenCode v2 setup(ctx) & v1 config hook implementation
+  config.ts     OpenCode v2/v1 config file & env discovery (JSON/JSONC)
   detector.ts   Strict `9router*` provider ID matching
   client.ts     /v1/models fetch with timeout + bearer auth
-  mapper.ts     9Router capabilities -> OpenCode model config
+  mapper.ts     9Router capabilities -> OpenCode v2 Model.Info & v1 ModelConfig
   filter.ts     Non-chat model filtering (ASR, embeddings, rerankers)
-  types.ts      9Router API + OpenCode config types
+  types.ts      9Router API + OpenCode v2/v1 types
 tests/          Vitest unit tests
 ```
 

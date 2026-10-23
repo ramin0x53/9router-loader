@@ -9,10 +9,16 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "files": [
     "dist",
+    "index.js",
+    "index.d.ts",
     "README.md"
   ],
   "scripts": {
@@ -39,7 +45,16 @@
     "node": ">=18"
   },
   "peerDependencies": {
+    "@opencode/plugin": ">=2.0.0",
     "@opencode-ai/plugin": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@opencode/plugin": {
+      "optional": true
+    },
+    "@opencode-ai/plugin": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
